@@ -85,7 +85,7 @@ public class InferenciaBayes {
                         // System.out.println();
                         // System.out.println(linea);
                         String[] probabilidades = linea.split(",");
-                        int i = 0;
+                       
 
                         for (String llave : matrizAux.keySet()) {
 
@@ -99,7 +99,7 @@ public class InferenciaBayes {
 
                             }
 
-                            i++;
+                            
 
                         }
 
@@ -112,6 +112,8 @@ public class InferenciaBayes {
             }
 
         }
+
+        br.close();
 
         return variables;
 
