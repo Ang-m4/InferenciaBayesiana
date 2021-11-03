@@ -3,26 +3,25 @@ import java.util.*;
 public class VariableProbabilidad {
 
     String nombre;
-    int cantidad;
+    HashSet<String> casos;
     HashMap<String, ArrayList<Object>> matriz;
-
-    ArrayList<String> casos;
     ArrayList<VariableProbabilidad> prev;
 
     VariableProbabilidad() {
         prev = new ArrayList<>();
+        casos = new HashSet<>();
     }
 
     String getNombre() {
         return this.nombre;
     }
 
-    void setNombre(String nombre) {
-        this.nombre = nombre;
+    HashSet<String> getCasos(){
+        return this.casos;
     }
 
-    int getCantidad() {
-        return cantidad;
+    void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     void setMatriz(HashMap<String, ArrayList<Object>> matriz) {
@@ -30,11 +29,7 @@ public class VariableProbabilidad {
     }
 
     HashMap<String, ArrayList<Object>> getMatriz() {
-       return this.matriz;
-    }
-
-    ArrayList<String> getCasos() {
-        return casos;
+        return this.matriz;
     }
 
     ArrayList<VariableProbabilidad> getPrevios() {

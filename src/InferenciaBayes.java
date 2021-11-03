@@ -5,23 +5,38 @@ public class InferenciaBayes {
 
     public static void main(String[] args) throws Exception {
 
-        //se leen los datos del archivo
+        // se leen los datos del archivo
         ArrayList<VariableProbabilidad> variables = crearVariables("Datos.txt");
 
-        //Se imprimen los valores de las variables leidas
-
+        // Se imprimen los valores de las variables leidas
         System.out.println();
         System.out.println(variables.get(0).getNombre());
-        System.out.println(variables.get(0).getMatriz());
+        System.out.println(variables.get(0).getCasos());
+        System.out.println(variables.get(0).getMatriz() + "\n");
 
         System.out.println(variables.get(1).getNombre());
-        System.out.println(variables.get(1).getMatriz());
+        System.out.println(variables.get(1).getCasos());
+        System.out.println(variables.get(1).getMatriz() + "\n");
 
         System.out.println(variables.get(2).getNombre());
-        System.out.println(variables.get(2).getMatriz());
+        System.out.println(variables.get(2).getCasos());
+        System.out.println(variables.get(2).getMatriz() + "\n");
 
         System.out.println(variables.get(3).getNombre());
-        System.out.println(variables.get(3).getMatriz());
+        System.out.println(variables.get(3).getCasos());
+        System.out.println(variables.get(3).getMatriz() + "\n");
+
+        // Ingreso de la consulta por consola P(light ∧ no ∧ delayed ∧ miss)
+        Scanner entrada = new Scanner(System.in);
+        System.out.println("Ingrese Su consulta: ");
+        String consulta = entrada.nextLine();
+
+        consulta = consulta.substring(consulta.indexOf("(") + 1, consulta.indexOf(")"));
+        System.out.println(consulta);
+
+        procesarConsulta(consulta, variables);
+
+        entrada.close();
 
     }
 
@@ -60,19 +75,26 @@ public class InferenciaBayes {
                     }
 
                     llaves = linea.substring(0, linea.length() - 1).split(",");
+                    ArrayList<String> nombreVariables = new ArrayList<>();
 
                     for (String a : llaves) {
 
                         for (VariableProbabilidad var : variables) {
 
+                            nombreVariables.add(var.getNombre());
+
                             if (var.getNombre().equals(a)) {
 
-                                auxiliar.agregarPrev(var);
+                                auxiliar.getPrevios().add(var);
 
                             }
+
                         }
 
-                        // for
+                        if (!nombreVariables.contains(a)) {
+                            auxiliar.getCasos().add(a);
+                        }
+
                         matrizAux.put(a, datos.get(indice));
                         indice++;
                     }
@@ -82,10 +104,8 @@ public class InferenciaBayes {
                 } else {
 
                     if (linea.length() != 0) {
-                        // System.out.println();
-                        // System.out.println(linea);
+
                         String[] probabilidades = linea.split(",");
-                       
 
                         for (String llave : matrizAux.keySet()) {
 
@@ -98,8 +118,6 @@ public class InferenciaBayes {
                                 }
 
                             }
-
-                            
 
                         }
 
@@ -119,4 +137,17 @@ public class InferenciaBayes {
 
     }
 
+    static void procesarConsulta(String consulta, ArrayList<VariableProbabilidad> variables) {
+
+        String partes = consulta.replace(" ", "");
+        String[] casos = partes.split("∧");
+
+        // En caso de ser una consulta normal
+        if (casos.length == variables.size()) {
+
+        } else { // En caso de necesitar inferencia
+
+        }
+
+    }
 }
