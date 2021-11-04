@@ -1,5 +1,9 @@
 import java.util.*;
+
+import javax.print.DocFlavor.STRING;
+
 import java.io.*;
+import java.lang.reflect.Array;
 
 public class InferenciaBayes {
 
@@ -27,15 +31,23 @@ public class InferenciaBayes {
         // System.out.println(variables.get(3).getMatriz() + "\n");
 
         // Ingreso de la consulta por consola P(light ∧ no ∧ delayed ∧ miss)
+        // P(appointment | light ∧ no).
+
         Scanner entrada = new Scanner(System.in);
         System.out.println("Ingrese Su consulta: ");
         String consulta = entrada.nextLine();
 
         consulta = consulta.substring(consulta.indexOf("(") + 1, consulta.indexOf(")"));
 
-        System.err.println();
+        if (consulta.contains("|")) {
 
-        procesarConsulta(consulta, variables);
+            System.out.println(ProcesarInferencia(consulta, variables));
+
+        } else {
+
+            System.out.println(procesarConsulta(consulta, variables));
+
+        }
 
         entrada.close();
 
@@ -138,8 +150,9 @@ public class InferenciaBayes {
 
     }
 
-    static void procesarConsulta(String consulta, ArrayList<VariableProbabilidad> variables) {
-
+    static double procesarConsulta(String consulta, ArrayList<VariableProbabilidad> variables) {
+        
+        
         String partes = consulta.replace(" ", "");
         List<String> casos = Arrays.asList(partes.split("∧"));
 
@@ -148,9 +161,11 @@ public class InferenciaBayes {
 
         // En caso de ser una consulta sin variables ocultas
         if (casos.size() == variables.size()) {
+        
+            
 
             for (String caso : casos) {
-
+                
                 aux1 = "";
                 consultaActualizada = consultaActualizada + "P()";
 
@@ -196,28 +211,16 @@ public class InferenciaBayes {
 
             // calcular probabilidad:
 
-            System.out.println(calcularProbabilidad(consultaActualizada, variables));
+            return calcularProbabilidad(consultaActualizada, variables);
 
-        } else { // En caso de tener variables ocultas
-
-
-
-
-
-
-
-
-
-
-
-            
         }
 
+        return 0;
     }
 
     static double calcularProbabilidad(String consulta, ArrayList<VariableProbabilidad> variables) {
-
-        // P(light ∧ no ∧ delayed ∧ miss)
+        
+        //P(appointment | light ∧ no)
         consulta = consulta.replaceFirst("P", "");
         List<String> partes = Arrays.asList(consulta.split("P"));
         double retorno = 1;
@@ -225,9 +228,13 @@ public class InferenciaBayes {
 
         int indice = 0;
         int i;
+
+
         for (String parte : partes) {
 
             parte = parte.substring(1, parte.length() - 1);
+
+            
 
             if (parte.contains("|")) {
 
@@ -235,20 +242,16 @@ public class InferenciaBayes {
 
                 List<String> datos = Arrays.asList(parte.split(" "));
 
-               
+                
 
                 for (VariableProbabilidad variable : variables) {
 
                     if (variable.getCasos().contains(datos.get(0))) {
-
+                        
                         i = buscarIndice(datos, variable.getMatriz());
-                        
-                        
-                        probabilidades[indice] = Double.parseDouble((String)(variable.getMatriz().get(datos.get(0)).get(i))); 
-                        System.out.println(probabilidades[indice]);
-                        
 
-
+                        probabilidades[indice] = Double.parseDouble((String) (variable.getMatriz().get(datos.get(0)).get(i)));
+                        
                     }
 
                 }
@@ -259,8 +262,7 @@ public class InferenciaBayes {
 
                     if (variable.getCasos().contains(parte)) {
 
-                        probabilidades[indice] = Double.parseDouble((String)(variable.getMatriz().get(parte).get(0))); 
-                        System.out.println(probabilidades[indice]);
+                        probabilidades[indice] = Double.parseDouble((String) (variable.getMatriz().get(parte).get(0)));
 
                     }
 
@@ -272,28 +274,36 @@ public class InferenciaBayes {
 
         }
 
-
         for (int j = 0; j < probabilidades.length; j++) {
-            
+
             retorno = retorno * probabilidades[j];
 
         }
-
 
         return retorno;
     }
 
     static int buscarIndice(List<String> datos, HashMap<String, ArrayList<Object>> matriz) {
 
+        //P(appointment | light ∧ no)
+       
         String[] llaves = new String[datos.size() - 1];
         ArrayList<ArrayList<Object>> arreglos = new ArrayList<>();
 
+    
+
         for (int i = 1; i < datos.size(); i++) {
+
+            
+           
 
             for (String llave : matriz.keySet()) {
 
-                if (matriz.get(llave).contains(datos.get(i))) {
+              
+                
 
+                if (matriz.get(llave).contains(datos.get(i))) {
+                    
                     llaves[i - 1] = llave;
                     arreglos.add(matriz.get(llave));
 
@@ -306,62 +316,124 @@ public class InferenciaBayes {
         if (llaves.length == 1) {
 
             int retorno = -1;
-            for (int i = 0; i < arreglos.get(0).size(); i++) {                
+            for (int i = 0; i < arreglos.get(0).size(); i++) {
 
-                if(arreglos.get(0).get(i).equals(datos.get(1))){
-                    
+                if (arreglos.get(0).get(i).equals(datos.get(1))) {
 
                     retorno = i;
                 }
 
-            }         
+            }
 
-            
             return retorno;
 
         }
-        
+
         // P(light ∧ no ∧ delayed ∧ miss)
         boolean encontro = false;
         int j = 0;
         int indiceA = 0;
 
-        while(!encontro){
-
+        while (!encontro) {
 
             for (int i = 0; i < arreglos.size(); i++) {
-                
 
-                
+                if (arreglos.get(i).get(j).equals(datos.get(i + 1))) {
 
-                if(arreglos.get(i).get(j).equals(datos.get(i+1))){
-
-                    
                     indiceA++;
 
-                }else{
-                    
+                } else {
+
                     i++;
-                    
+
                     indiceA = 0;
                 }
 
-                
+                if (indiceA == datos.size() - 1) {
 
-                if(indiceA == datos.size()-1){
-                    
-                   
                     return j;
                 }
-
-
 
             }
 
             j++;
 
         }
-        
+
         return 0;
     }
+
+    static String ProcesarInferencia(String consulta, ArrayList<VariableProbabilidad> variables) {
+
+        /// P(appointment | light ∧ no)
+        consulta = consulta.replace('|', '∧');
+        String aux = consulta.replaceAll(" ", "");
+        ArrayList<Double> retorno = new ArrayList<>();
+        List<String> casos = Arrays.asList(aux.split("∧"));
+        List<String> casosFor = new ArrayList<>();
+        HashSet<String> pruebas = new HashSet<>();
+
+        double delta = 1;
+        double suma = 0;
+
+        VariableProbabilidad llave = new VariableProbabilidad();
+
+        for (VariableProbabilidad variable : variables) {
+
+            if (variable.getNombre().equals(casos.get(0))) {
+                pruebas = variable.getCasos();
+                
+            }
+        }
+
+        for (String prueba : pruebas) {
+
+            String consultaEdit = consulta.replace(casos.get(0), prueba);
+            
+            String auxFor = consultaEdit.replaceAll(" ","");
+            casosFor = Arrays.asList(auxFor.split("∧"));
+            
+
+            for(VariableProbabilidad variable: variables) {
+                int index = 0;
+
+                for (int i = 0; i < casosFor.size(); i++){
+                    
+                    if(variable.getCasos().contains(casosFor.get(i))){
+                        index++;
+                    }
+
+                }
+
+                if( index == 0){
+                    llave = variable;
+                }
+
+
+
+            }
+
+            ArrayList<String> sumatoria = new ArrayList<>();
+            double resultado = 0;
+
+            for(String caso: llave.getCasos()){
+                
+               resultado = resultado + procesarConsulta(consultaEdit + " ∧ "+caso,variables);
+
+            }
+
+            System.out.println("𝝰["+resultado+"]");
+            System.out.println();
+
+            retorno.add(resultado);
+            suma = suma + resultado;
+        }   
+
+        delta = 1/suma;
+
+        String a = "["+delta*retorno.get(0)+","+delta*retorno.get(1)+"]";
+
+        return a;
+    }
+
 }
