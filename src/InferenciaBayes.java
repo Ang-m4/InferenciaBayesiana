@@ -34,6 +34,7 @@ public class InferenciaBayes {
         consulta = consulta.substring(consulta.indexOf("(") + 1, consulta.indexOf(")"));
 
         System.err.println();
+
         procesarConsulta(consulta, variables);
 
         entrada.close();
@@ -195,10 +196,21 @@ public class InferenciaBayes {
 
             // calcular probabilidad:
 
-            calcularProbabilidad(consultaActualizada, variables);
+            System.out.println(calcularProbabilidad(consultaActualizada, variables));
 
         } else { // En caso de tener variables ocultas
 
+
+
+
+
+
+
+
+
+
+
+            
         }
 
     }
@@ -208,32 +220,34 @@ public class InferenciaBayes {
         // P(light ∧ no ∧ delayed ∧ miss)
         consulta = consulta.replaceFirst("P", "");
         List<String> partes = Arrays.asList(consulta.split("P"));
+        double retorno = 1;
+        Double[] probabilidades = new Double[partes.size()];
 
-        double[] probabilidades = new double[partes.size()];
         int indice = 0;
-
+        int i;
         for (String parte : partes) {
 
             parte = parte.substring(1, parte.length() - 1);
 
             if (parte.contains("|")) {
 
-                parte = parte.replaceAll("|", " ");
+                parte = parte.replace('|', ' ');
 
                 List<String> datos = Arrays.asList(parte.split(" "));
-                int tam = datos.size() - 1;
+
+               
 
                 for (VariableProbabilidad variable : variables) {
 
                     if (variable.getCasos().contains(datos.get(0))) {
 
-                        for (int j = 0; j < variable.getMatriz().get(datos.get(0)).size(); j++) {
+                        i = buscarIndice(datos, variable.getMatriz());
+                        
+                        
+                        probabilidades[indice] = Double.parseDouble((String)(variable.getMatriz().get(datos.get(0)).get(i))); 
+                        System.out.println(probabilidades[indice]);
+                        
 
-                            
-
-
-
-                        }
 
                     }
 
@@ -241,13 +255,12 @@ public class InferenciaBayes {
 
             } else {
 
-                System.out.println(parte);
-
                 for (VariableProbabilidad variable : variables) {
 
                     if (variable.getCasos().contains(parte)) {
 
-                        probabilidades[indice] = (Double) variable.getMatriz().get(parte).get(0);
+                        probabilidades[indice] = Double.parseDouble((String)(variable.getMatriz().get(parte).get(0))); 
+                        System.out.println(probabilidades[indice]);
 
                     }
 
@@ -259,7 +272,96 @@ public class InferenciaBayes {
 
         }
 
-        return 0.0;
+
+        for (int j = 0; j < probabilidades.length; j++) {
+            
+            retorno = retorno * probabilidades[j];
+
+        }
+
+
+        return retorno;
     }
 
+    static int buscarIndice(List<String> datos, HashMap<String, ArrayList<Object>> matriz) {
+
+        String[] llaves = new String[datos.size() - 1];
+        ArrayList<ArrayList<Object>> arreglos = new ArrayList<>();
+
+        for (int i = 1; i < datos.size(); i++) {
+
+            for (String llave : matriz.keySet()) {
+
+                if (matriz.get(llave).contains(datos.get(i))) {
+
+                    llaves[i - 1] = llave;
+                    arreglos.add(matriz.get(llave));
+
+                }
+
+            }
+
+        }
+
+        if (llaves.length == 1) {
+
+            int retorno = -1;
+            for (int i = 0; i < arreglos.get(0).size(); i++) {                
+
+                if(arreglos.get(0).get(i).equals(datos.get(1))){
+                    
+
+                    retorno = i;
+                }
+
+            }         
+
+            
+            return retorno;
+
+        }
+        
+        // P(light ∧ no ∧ delayed ∧ miss)
+        boolean encontro = false;
+        int j = 0;
+        int indiceA = 0;
+
+        while(!encontro){
+
+
+            for (int i = 0; i < arreglos.size(); i++) {
+                
+
+                
+
+                if(arreglos.get(i).get(j).equals(datos.get(i+1))){
+
+                    
+                    indiceA++;
+
+                }else{
+                    
+                    i++;
+                    
+                    indiceA = 0;
+                }
+
+                
+
+                if(indiceA == datos.size()-1){
+                    
+                   
+                    return j;
+                }
+
+
+
+            }
+
+            j++;
+
+        }
+        
+        return 0;
+    }
 }
