@@ -9,22 +9,22 @@ public class InferenciaBayes {
         ArrayList<VariableProbabilidad> variables = crearVariables("Datos.txt");
 
         // Se imprimen los valores de las variables leidas
-        System.out.println();
-        System.out.println(variables.get(0).getNombre());
-        System.out.println(variables.get(0).getCasos());
-        System.out.println(variables.get(0).getMatriz() + "\n");
+        // System.out.println();
+        // System.out.println(variables.get(0).getNombre());
+        // System.out.println(variables.get(0).getCasos());
+        // System.out.println(variables.get(0).getMatriz() + "\n");
 
-        System.out.println(variables.get(1).getNombre());
-        System.out.println(variables.get(1).getCasos());
-        System.out.println(variables.get(1).getMatriz() + "\n");
+        // System.out.println(variables.get(1).getNombre());
+        // System.out.println(variables.get(1).getCasos());
+        // System.out.println(variables.get(1).getMatriz() + "\n");
 
-        System.out.println(variables.get(2).getNombre());
-        System.out.println(variables.get(2).getCasos());
-        System.out.println(variables.get(2).getMatriz() + "\n");
+        // System.out.println(variables.get(2).getNombre());
+        // System.out.println(variables.get(2).getCasos());
+        // System.out.println(variables.get(2).getMatriz() + "\n");
 
-        System.out.println(variables.get(3).getNombre());
-        System.out.println(variables.get(3).getCasos());
-        System.out.println(variables.get(3).getMatriz() + "\n");
+        // System.out.println(variables.get(3).getNombre());
+        // System.out.println(variables.get(3).getCasos());
+        // System.out.println(variables.get(3).getMatriz() + "\n");
 
         // Ingreso de la consulta por consola P(light ∧ no ∧ delayed ∧ miss)
         Scanner entrada = new Scanner(System.in);
@@ -142,7 +142,7 @@ public class InferenciaBayes {
         String partes = consulta.replace(" ", "");
         List<String> casos = Arrays.asList(partes.split("∧"));
 
-        String consultaActualizada = "";
+        String consultaActualizada = new String();
         String aux1;
 
         // En caso de ser una consulta sin variables ocultas
@@ -193,12 +193,9 @@ public class InferenciaBayes {
             consultaActualizada = consultaActualizada.replace(" )", ")");
             System.out.println(consultaActualizada);
 
+            // calcular probabilidad:
 
-
-            //calcular probabilidad:
-
-            calcularProbabilidad(consultaActualizada);
-
+            calcularProbabilidad(consultaActualizada, variables);
 
         } else { // En caso de tener variables ocultas
 
@@ -206,13 +203,61 @@ public class InferenciaBayes {
 
     }
 
+    static double calcularProbabilidad(String consulta, ArrayList<VariableProbabilidad> variables) {
 
-    static double calcularProbabilidad(String consulta){
+        // P(light ∧ no ∧ delayed ∧ miss)
+        consulta = consulta.replaceFirst("P", "");
+        List<String> partes = Arrays.asList(consulta.split("P"));
+
+        double[] probabilidades = new double[partes.size()];
+        int indice = 0;
+
+        for (String parte : partes) {
+
+            parte = parte.substring(1, parte.length() - 1);
+
+            if (parte.contains("|")) {
+
+                parte = parte.replaceAll("|", " ");
+
+                List<String> datos = Arrays.asList(parte.split(" "));
+                int tam = datos.size() - 1;
+
+                for (VariableProbabilidad variable : variables) {
+
+                    if (variable.getCasos().contains(datos.get(0))) {
+
+                        for (int j = 0; j < variable.getMatriz().get(datos.get(0)).size(); j++) {
+
+                            
 
 
 
+                        }
 
-        
+                    }
+
+                }
+
+            } else {
+
+                System.out.println(parte);
+
+                for (VariableProbabilidad variable : variables) {
+
+                    if (variable.getCasos().contains(parte)) {
+
+                        probabilidades[indice] = (Double) variable.getMatriz().get(parte).get(0);
+
+                    }
+
+                }
+
+            }
+
+            indice++;
+
+        }
 
         return 0.0;
     }
