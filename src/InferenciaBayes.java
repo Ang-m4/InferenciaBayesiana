@@ -32,8 +32,8 @@ public class InferenciaBayes {
         String consulta = entrada.nextLine();
 
         consulta = consulta.substring(consulta.indexOf("(") + 1, consulta.indexOf(")"));
-        System.out.println(consulta);
 
+        System.err.println();
         procesarConsulta(consulta, variables);
 
         entrada.close();
@@ -140,14 +140,81 @@ public class InferenciaBayes {
     static void procesarConsulta(String consulta, ArrayList<VariableProbabilidad> variables) {
 
         String partes = consulta.replace(" ", "");
-        String[] casos = partes.split("∧");
+        List<String> casos = Arrays.asList(partes.split("∧"));
 
-        // En caso de ser una consulta normal
-        if (casos.length == variables.size()) {
+        String consultaActualizada = "";
+        String aux1;
 
-        } else { // En caso de necesitar inferencia
+        // En caso de ser una consulta sin variables ocultas
+        if (casos.size() == variables.size()) {
+
+            for (String caso : casos) {
+
+                aux1 = "";
+                consultaActualizada = consultaActualizada + "P()";
+
+                for (VariableProbabilidad variable : variables) {
+
+                    if (variable.getCasos().contains(caso)) {
+
+                        // si tiene previos
+                        if (variable.getPrevios().size() != 0) {
+
+                            aux1 = aux1 + caso + "|";
+
+                            for (VariableProbabilidad previo : variable.getPrevios()) {
+
+                                for (String casoAux : casos) {
+
+                                    if (previo.getCasos().contains(casoAux)) {
+
+                                        aux1 = aux1 + casoAux + " ";
+
+                                    }
+
+                                }
+
+                            }
+
+                        } else { // si no tiene previos
+
+                            aux1 = aux1 + caso;
+
+                        }
+
+                    }
+
+                }
+
+                consultaActualizada = consultaActualizada.replace("P()", "P(" + aux1 + ")");
+
+            }
+
+            consultaActualizada = consultaActualizada.replace(" )", ")");
+            System.out.println(consultaActualizada);
+
+
+
+            //calcular probabilidad:
+
+            calcularProbabilidad(consultaActualizada);
+
+
+        } else { // En caso de tener variables ocultas
 
         }
 
     }
+
+
+    static double calcularProbabilidad(String consulta){
+
+
+
+
+        
+
+        return 0.0;
+    }
+
 }

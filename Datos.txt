@@ -1,15 +1,15 @@
-Rain:
+rain:
 none,light,heavy-
 0.7,0.2,0.1
 
-Mantenance:
-Rain,yes,no-
+mantenance:
+rain,yes,no-
 none,0.4,0.6
 light,0.2,0.8
 heavy,0.1,0.9
 
-Train:
-Rain,Mantenance,OnTime,Delayed-
+train:
+rain,mantenance,onTime,delayed-
 none,yes,0.8,0.2
 none,no,0.9,0.1
 light,yes,0.6,0.4
@@ -17,7 +17,7 @@ light,no,0.7,0.3
 heavy,yes,0.4,0.6
 heavy,no,0.5,0.5
 
-Appointment:
-Train,attend,miss-
+appointment:
+train,attend,miss-
 ontime,0.9,0.6
 delayed,0.6,0.4
